@@ -29,7 +29,6 @@ export class TreeViewModel implements ITreeViewModel {
     private _options: ITreeOptions
   ) {
     const data = this.buildFileTree(this._options.dataSource, 0);
-    // Notify the change.
     this._dataSource.next(data);
   }
 
@@ -54,7 +53,7 @@ export class TreeViewModel implements ITreeViewModel {
     }, []);
   }
 
-  updateSelectedNodeState(nodeClicked: { id: any; }): void {
+  public updateSelectedNodeState(nodeClicked: { id: any; }): void {
     const selectedNodes: any = this._state.selectedNodes;
     if (selectedNodes.some((node: { id: any; }) => node.id === nodeClicked.id)) {
       selectedNodes.filter((node: { id: any; }) => node.id !== nodeClicked);
@@ -64,7 +63,7 @@ export class TreeViewModel implements ITreeViewModel {
     this._state.selectedNodes = selectedNodes;
   }
 
-  filterDataSource(filterText: string): void {
+  public filterDataSource(filterText: string): void {
     if (this._options.onFilterChange) {
       const masterCopy: any = this._state.masterDataSource;
       this._state.filteredDataSource = this._options.onFilterChange(masterCopy, filterText);
@@ -74,34 +73,35 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  updateSelectedNodes(event: SelectionChange<any>): void {
+  public updateSelectedNodes(event: SelectionChange<any>): void {
       console.log(event);
   }
 
-  updateDataSource(dataSource: any): void {
+  public updateDataSource(dataSource: any): void {
     this._state.masterDataSource = dataSource;
     this._state.filteredDataSource = dataSource;
     this.notifyListenersOnDataUpdate();
   }
 
-  insertItem(parent: TodoItemNode, name: string) {
-    if (parent.children) {
-      parent.children.push({ item: name } as TodoItemNode);
-      this._dataSource.next(this.data);
+  public insertItem(parent: TodoItemNode, name: string) {
+    if (!parent.children) {
+      parent.children = [];
     }
+    parent.children.push({ item: name } as TodoItemNode);
+    this._dataSource.next(this.data);
   }
 
-  updateItem(node: TodoItemNode, name: string) {
+  public updateItem(node: TodoItemNode, name: string) {
     node.item = name;
     this._dataSource.next(this.data);
   }
 
-  notifyListenersOnDataUpdate(): void {
+  public notifyListenersOnDataUpdate(): void {
     this._dataSource.next(this._state.masterDataSource);
     this._notifyTreeChange.next(null);
   }
 
-  getVisibleNodeMap(): any {
+  public getVisibleNodeMap(): any {
     return this._state.filteredDataSource;
   }
 }
