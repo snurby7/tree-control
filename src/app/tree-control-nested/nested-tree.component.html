@@ -8,7 +8,8 @@
         </mat-icon>
       </button>
       <mat-checkbox class="checklist-leaf-node" [checked]="checklistSelection.isSelected(node)" (change)="checklistSelection.toggle(node)">
-        {{node.filename}}:{{node.type}}</mat-checkbox>
+      </mat-checkbox>
+      <ng-container *ngTemplateOutlet="itemNodeTemplate; context: {$implicit: node}"></ng-container>
     </li>
   </mat-tree-node>
 
@@ -21,18 +22,8 @@
           </mat-icon>
         </button>
         <mat-checkbox class="checklist-leaf-node" [checked]="descendantsAllSelected(node)" [indeterminate]="descendantsPartiallySelected(node)"
-          (change)="todoItemSelectionToggle(node)">{{node.filename}}</mat-checkbox>
-      </div>
-      <ul [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">
-        <ng-container matTreeNodeOutlet></ng-container>
-      </ul>
-    </li>
-  </mat-nested-tree-node>
-
-  <mat-nested-tree-node *matTreeNodeDef="let node; when: showInput">
-    <li>
-      <div class="mat-tree-node">
-        what about this?
+          (change)="todoItemSelectionToggle(node)"></mat-checkbox>
+        <ng-container *ngTemplateOutlet="itemLeadNodeTemplate; context: {$implicit: node}"></ng-container>
       </div>
       <ul [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">
         <ng-container matTreeNodeOutlet></ng-container>

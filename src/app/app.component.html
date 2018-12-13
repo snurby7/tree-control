@@ -2,11 +2,22 @@
   <h2>Flat Tree</h2>
   <button mat-button (click)="treeVM.expand()">Expand</button>
   <button mat-button (click)="treeVM.collapse()">Collapse</button>
-  <app-tree *ngIf="treeVM" [vm]="treeVM"></app-tree>
+  <app-tree *ngIf="treeVM" [vm]="treeVM">
+    <ng-template #itemTemplate let-node>
+      {{node?.item}}
+    </ng-template>
+  </app-tree>
 </div>
 <div>
   <h2>
     Nested Tree
   </h2>
-  <app-tree-nested *ngIf="nestedTreeVM" [vm]="nestedTreeVM"></app-tree-nested>
+  <app-tree-nested *ngIf="nestedTreeVM" [vm]="nestedTreeVM">
+    <ng-template #itemLeadNodeTemplate let-node>
+      {{node?.filename}}
+    </ng-template>
+    <ng-template #itemNodeTemplate let-node>
+      {{node?.filename}}:{{node?.type}}
+    </ng-template>
+  </app-tree-nested>
 </div>

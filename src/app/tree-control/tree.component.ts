@@ -1,6 +1,6 @@
 import { SelectionChange, SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ContentChild, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { Subscription } from 'rxjs';
 
@@ -14,6 +14,8 @@ import { TreeViewModel } from './tree.view-model';
 })
 
 export class TreeComponent implements OnInit, OnDestroy {
+  @ContentChild('itemTemplate') itemTemplate: any;
+
   @Input() vm: TreeViewModel;
 
   private _itemInAddState = false;
