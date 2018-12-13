@@ -1,20 +1,9 @@
-import {
-  SelectionChange,
-} from '@angular/cdk/collections';
-import {
-  BehaviorSubject,
-  Observable,
-} from 'rxjs';
+import { SelectionChange } from '@angular/cdk/collections';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-import {
-  NestedFileNode,
-} from './contracts/nested-node.interface';
-import {
-  ITreeOptions,
-} from './nested-tree-options.interface';
-import {
-  INestedTreeViewModel,
-} from './nested-tree.view-model.interface';
+import { NestedFileNode } from './contracts/nested-node.interface';
+import { ITreeOptions } from './nested-tree-options.interface';
+import { INestedTreeViewModel } from './nested-tree.view-model.interface';
 
 export class NestedTreeViewModel implements INestedTreeViewModel {
   private _state: any = {
@@ -45,7 +34,7 @@ export class NestedTreeViewModel implements INestedTreeViewModel {
     this._dataSource.next(data);
   }
 
-  buildFileTree(obj: {[key: string]: any}, level: number): NestedFileNode[] {
+  private buildFileTree(obj: {[key: string]: any}, level: number): NestedFileNode[] {
     return Object.keys(obj).reduce<NestedFileNode[]>((accumulator, key) => {
       const value = obj[key];
       const node = new NestedFileNode();
@@ -92,5 +81,13 @@ export class NestedTreeViewModel implements INestedTreeViewModel {
 
   public collapse(): void {
     this._collapseExpandAll.next(true);
+  }
+
+  public insertItem(node: NestedFileNode): void {
+    if (!node.children) {
+      node.children = [];
+    }
+    node.children.push(new NestedFileNode());
+    this._dataSource.next(this.data);
   }
 }

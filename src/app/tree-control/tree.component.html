@@ -8,7 +8,7 @@
             disabled></button>
         <mat-checkbox class="checklist-leaf-node"
             [checked]="checklistSelection.isSelected(node)"
-            (change)="checklistSelection.toggle(node);">{{node.item}}</mat-checkbox>
+            (change)="checklistSelection.toggle(node)">{{node.item}}</mat-checkbox>
         <button mat-icon-button
             (click)="addNewItem(node)">
             <mat-icon>add</mat-icon>

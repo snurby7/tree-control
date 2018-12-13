@@ -1,8 +1,12 @@
-<button mat-button
-    (click)="treeVM.expand()">Expand</button>
-<button mat-button
-    (click)="treeVM.collapse()">Collapse</button>
-<app-tree *ngIf="treeVM"
-    [vm]="treeVM"></app-tree>
-<app-tree-nested *ngIf="nestedTreeVM"
-    [vm]="nestedTreeVM"></app-tree-nested>
+<div>
+  <h2>Flat Tree</h2>
+  <button mat-button (click)="treeVM.expand()">Expand</button>
+  <button mat-button (click)="treeVM.collapse()">Collapse</button>
+  <app-tree *ngIf="treeVM" [vm]="treeVM"></app-tree>
+</div>
+<div>
+  <h2>
+    Nested Tree
+  </h2>
+  <app-tree-nested *ngIf="nestedTreeVM" [vm]="nestedTreeVM"></app-tree-nested>
+</div>
