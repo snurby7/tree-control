@@ -1,11 +1,30 @@
-import { SelectionChange, SelectionModel } from '@angular/cdk/collections';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import {
+  SelectionChange,
+  SelectionModel,
+} from '@angular/cdk/collections';
+import {
+  FlatTreeControl,
+} from '@angular/cdk/tree';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
+import {
+  MatTreeFlatDataSource,
+  MatTreeFlattener,
+} from '@angular/material/tree';
 
-import { TodoItemFlatNode } from './contracts/todo-item-flat-node.interface';
-import { TodoItemNode } from './contracts/todo-item-node.interface';
-import { TreeViewModel } from './tree.view-model';
+import {
+  TodoItemFlatNode,
+} from './contracts/todo-item-flat-node.interface';
+import {
+  TodoItemNode,
+} from './contracts/todo-item-node.interface';
+import {
+  TreeViewModel,
+} from './tree.view-model';
 
 @Component({
   selector: 'app-tree',
@@ -60,7 +79,7 @@ export class TreeComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this._subscriptions.push(this.vm.collapseExpandAll.subscribe((collapse: any) => {
+    this._subscriptions.push(this.vm.collapseExpandAll.subscribe((collapse: boolean) => {
       if (collapse) {
         this.treeControl.collapseAll();
       } else {

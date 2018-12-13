@@ -4,4 +4,6 @@ export interface ITreeViewModel {
   updateDataSource: (dataSource: any) => void;
   notifyListenersOnDataUpdate: () => void;
   getVisibleNodeMap: () => any;
+  collapse: () => void;
+  expand: () => void;
 }

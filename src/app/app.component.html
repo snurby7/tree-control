@@ -1,1 +1,3 @@
+<button mat-button (click)="treeVM.expand()">Expand</button>
+<button mat-button (click)="treeVM.collapse()">Collapse</button>
 <app-tree *ngIf="treeVM" [vm]="treeVM"></app-tree>

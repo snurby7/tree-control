@@ -1,11 +1,20 @@
-import { SelectionChange } from '@angular/cdk/collections';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  SelectionChange,
+} from '@angular/cdk/collections';
+import {
+  BehaviorSubject,
+  Observable,
+} from 'rxjs';
 
-import { TodoItemNode } from './contracts/todo-item-node.interface';
-import { ITreeOptions } from './tree-options.interface';
-import { ITreeViewModel } from './tree.view-model.interface';
-
-
+import {
+  TodoItemNode,
+} from './contracts/todo-item-node.interface';
+import {
+  ITreeOptions,
+} from './tree-options.interface';
+import {
+  ITreeViewModel,
+} from './tree.view-model.interface';
 
 export class TreeViewModel implements ITreeViewModel {
   private _state: any = {
@@ -103,5 +112,13 @@ export class TreeViewModel implements ITreeViewModel {
 
   public getVisibleNodeMap(): any {
     return this._state.filteredDataSource;
+  }
+
+  public expand(): void {
+    this._collapseExpandAll.next(false);
+  }
+
+  public collapse(): void {
+    this._collapseExpandAll.next(true);
   }
 }
