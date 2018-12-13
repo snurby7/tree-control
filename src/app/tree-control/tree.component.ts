@@ -1,34 +1,12 @@
-import {
-  SelectionChange,
-  SelectionModel,
-} from '@angular/cdk/collections';
-import {
-  FlatTreeControl,
-} from '@angular/cdk/tree';
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
-import {
-  MatTreeFlatDataSource,
-  MatTreeFlattener,
-} from '@angular/material/tree';
-import {
-  Subscription,
-} from 'rxjs';
+import { SelectionChange, SelectionModel } from '@angular/cdk/collections';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { Subscription } from 'rxjs';
 
-import {
-  TodoItemFlatNode,
-} from './contracts/todo-item-flat-node.interface';
-import {
-  TodoItemNode,
-} from './contracts/todo-item-node.interface';
-import {
-  TreeViewModel,
-} from './tree.view-model';
+import { TodoItemFlatNode } from './contracts/todo-item-flat-node.interface';
+import { TodoItemNode } from './contracts/todo-item-node.interface';
+import { TreeViewModel } from './tree.view-model';
 
 @Component({
   selector: 'app-tree',
@@ -38,6 +16,7 @@ import {
 export class TreeComponent implements OnInit, OnDestroy {
   @Input() vm: TreeViewModel;
 
+  private _itemInAddState = false;
   // this is callback to store the node expansion and once the data is set it will fire
   // the callback to open that node.
   private _runFunctionOnNextData: () => void = null;
@@ -56,12 +35,13 @@ export class TreeComponent implements OnInit, OnDestroy {
   public checklistSelection = new SelectionModel<TodoItemFlatNode>(true, null, true);
   private _subscriptions: Subscription[] = [];
 
+  public maxLevel = 3;
+  public get itemInAddState(): boolean { return this._itemInAddState; }
   public getLevel = (node: TodoItemFlatNode) => node.level;
   public isExpandable = (node: TodoItemFlatNode) => node.expandable;
   public getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
   public hasChild = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.expandable;
   public hasNoContent = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.item === '';
-
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
@@ -101,6 +81,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     this._subscriptions.push(this.checklistSelection.changed.subscribe((event: SelectionChange<any>) => {
       this.vm.updateSelectedNodes(event);
     }));
+    this.maxLevel = this.vm.minimumNodes;
   }
 
   public ngOnDestroy(): void {
@@ -134,6 +115,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     const parentNode = this.flatNodeMap.get(node);
     if (!parentNode) { return; }
     this.vm.insertItem(parentNode, '');
+    this._itemInAddState = true;
     this._runFunctionOnNextData = () => this.treeControl.expand(node);
   }
 
@@ -142,6 +124,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     const nestedNode = this.flatNodeMap.get(node);
     if (!nestedNode) { return; }
     this.vm.updateItem(nestedNode, itemValue);
+    this._itemInAddState = false;
     this._runFunctionOnNextData = () => this.changeDetectorRef.detectChanges();
   }
 }

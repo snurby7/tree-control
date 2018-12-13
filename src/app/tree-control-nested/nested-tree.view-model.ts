@@ -28,9 +28,7 @@ export class NestedTreeViewModel implements INestedTreeViewModel {
   constructor(
     private _options: ITreeOptions
   ) {
-    const dataObject = JSON.parse(this._options.dataSource);
-
-    const data = this.buildFileTree(dataObject, 0);
+    const data = this.buildFileTree(this._options.dataSource, 0);
     this._dataSource.next(data);
   }
 
@@ -87,7 +85,6 @@ export class NestedTreeViewModel implements INestedTreeViewModel {
     if (!node.children) {
       node.children = [];
     }
-    node.children.push(new NestedFileNode());
     this._dataSource.next(this.data);
   }
 }

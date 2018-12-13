@@ -26,12 +26,13 @@ export class NestedTreeComponent implements OnInit, OnDestroy {
   constructor() {
     this.nestedTreeControl = new NestedTreeControl<NestedFileNode>(
       this._getChildren
-      );
-      this.nestedDataSource = new MatTreeNestedDataSource();
-    }
+    );
+    this.nestedDataSource = new MatTreeNestedDataSource();
+  }
 
-  public hasNestedChild = (_: number, nodeData: NestedFileNode) => !nodeData.type;
-  public hasNoContent = (_: number, _nodeData: NestedFileNode) => _nodeData.type === null;
+  public hasNestedChild = (_: number, nodeData: NestedFileNode) => !nodeData.type && nodeData.children;
+  public hasEmptyChildren = (_: number, nodeData: NestedFileNode) => nodeData.children;
+  public showInput = (_: number, nodeData: NestedFileNode) => nodeData.children && nodeData.children.length === 0;
 
   public ngOnInit(): void {
     this._subscriptions.push(
@@ -40,6 +41,7 @@ export class NestedTreeComponent implements OnInit, OnDestroy {
           return;
         }
         this.nestedDataSource.data = dataSource;
+        console.log(this.nestedDataSource.data);
       })
     );
 

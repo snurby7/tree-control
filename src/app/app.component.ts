@@ -1,19 +1,9 @@
-import {
-  Component,
-} from '@angular/core';
+import { Component } from '@angular/core';
 
-import {
-  NestedTreeFactory,
-} from './tree-control-nested/nested-tree.factory';
-import {
-  INestedTreeViewModel,
-} from './tree-control-nested/nested-tree.view-model.interface';
-import {
-  TreeFactory,
-} from './tree-control/tree.factory';
-import {
-  ITreeViewModel,
-} from './tree-control/tree.view-model.interface';
+import { NestedTreeFactory } from './tree-control-nested/nested-tree.factory';
+import { INestedTreeViewModel } from './tree-control-nested/nested-tree.view-model.interface';
+import { TreeFactory } from './tree-control/tree.factory';
+import { ITreeViewModel } from './tree-control/tree.view-model.interface';
 
 const TREE_DATA = {
   Groceries: {
@@ -33,7 +23,7 @@ const TREE_DATA = {
   ]
 };
 
-const NESTED_TREE_DATA = JSON.stringify({
+const NESTED_TREE_DATA = {
   Applications: {
     Calendar: 'app',
     Chrome: 'app',
@@ -67,7 +57,7 @@ const NESTED_TREE_DATA = JSON.stringify({
     Sun: 'png',
     Woods: 'jpg'
   }
-});
+};
 
 @Component({
   selector: 'app-root',
