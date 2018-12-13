@@ -17,11 +17,11 @@ import {
 } from '@angular/platform-browser/animations';
 
 import {
-  TreeComponent,
-} from './tree.component';
+  NestedTreeComponent,
+} from './nested-tree.component';
 import {
-  TreeFactory,
-} from './tree.factory';
+  NestedTreeFactory,
+} from './nested-tree.factory';
 
 @NgModule({
   imports: [
@@ -34,9 +34,9 @@ import {
     MatButtonModule,
     ReactiveFormsModule,
   ],
-  exports: [TreeComponent],
-  declarations: [TreeComponent],
-  entryComponents: [TreeComponent],
-  providers: [TreeFactory],
+  exports: [NestedTreeComponent],
+  declarations: [NestedTreeComponent],
+  entryComponents: [NestedTreeComponent],
+  providers: [NestedTreeFactory],
 })
-export class TreeModule { }
+export class NestedTreeModule { }

@@ -23,13 +23,15 @@ export class TreeViewModel implements ITreeViewModel {
     selectedNodes: []
   }; // this will store the state
 
-  _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public minimumNodes: number = null;
+
+  private _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public get collapseExpandAll(): Observable<boolean> { return this._collapseExpandAll.asObservable(); }
 
-  _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
+  private _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
   public get dataSource(): Observable<TodoItemNode[]> { return this._dataSource.asObservable(); }
 
-  _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
+  private _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
   public get notifyTreeChange(): Observable<void> { return this._notifyTreeChange.asObservable(); }
 
   get data(): TodoItemNode[] { return this._dataSource.value; }
@@ -39,6 +41,7 @@ export class TreeViewModel implements ITreeViewModel {
   ) {
     const data = this.buildFileTree(this._options.dataSource, 0);
     this._dataSource.next(data);
+    this.minimumNodes = this._options.maxNodeLevel || null;
   }
 
   buildFileTree(obj: object, level: number): TodoItemNode[] {

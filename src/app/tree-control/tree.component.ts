@@ -9,12 +9,16 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
 } from '@angular/material/tree';
+import {
+  Subscription,
+} from 'rxjs';
 
 import {
   TodoItemFlatNode,
@@ -31,7 +35,7 @@ import {
   templateUrl: 'tree.component.html'
 })
 
-export class TreeComponent implements OnInit {
+export class TreeComponent implements OnInit, OnDestroy {
   @Input() vm: TreeViewModel;
 
   // this is callback to store the node expansion and once the data is set it will fire
@@ -50,13 +54,14 @@ export class TreeComponent implements OnInit {
   public dataSource: MatTreeFlatDataSource<TodoItemNode, TodoItemFlatNode>;
   /** The selection for checklist */
   public checklistSelection = new SelectionModel<TodoItemFlatNode>(true, null, true);
-  private _subscriptions = [];
+  private _subscriptions: Subscription[] = [];
 
   public getLevel = (node: TodoItemFlatNode) => node.level;
   public isExpandable = (node: TodoItemFlatNode) => node.expandable;
   public getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
   public hasChild = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.expandable;
   public hasNoContent = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.item === '';
+
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
@@ -70,7 +75,6 @@ export class TreeComponent implements OnInit {
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
   }
-
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
     this.treeFlattener = new MatTreeFlattener(this._transformer, this.getLevel, this.isExpandable, this.getChildren);
@@ -97,6 +101,10 @@ export class TreeComponent implements OnInit {
     this._subscriptions.push(this.checklistSelection.changed.subscribe((event: SelectionChange<any>) => {
       this.vm.updateSelectedNodes(event);
     }));
+  }
+
+  public ngOnDestroy(): void {
+    this._subscriptions.forEach(x => x.unsubscribe());
   }
 
   /** Whether all the descendants of the node are selected */

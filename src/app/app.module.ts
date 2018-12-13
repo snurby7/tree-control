@@ -1,8 +1,19 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {
+  NgModule,
+} from '@angular/core';
+import {
+  BrowserModule,
+} from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
-import { TreeModule } from './tree-control/tree.module';
+import {
+  AppComponent,
+} from './app.component';
+import {
+  NestedTreeModule,
+} from './tree-control-nested/nested-tree.module';
+import {
+  TreeModule,
+} from './tree-control/tree.module';
 
 @NgModule({
   declarations: [
@@ -11,6 +22,7 @@ import { TreeModule } from './tree-control/tree.module';
   imports: [
     BrowserModule,
     TreeModule,
+    NestedTreeModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
