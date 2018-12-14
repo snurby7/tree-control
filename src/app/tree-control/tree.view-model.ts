@@ -58,6 +58,7 @@ export class TreeViewModel<TTreeNode extends Node, TFlatNode extends FlatNode> i
   }
 
   private buildFileTree(obj: any, level: number): TTreeNode[] {
+    console.log(obj);
     this._state.masterDataSource = obj;
     this._state.filterDataSource = obj;
 

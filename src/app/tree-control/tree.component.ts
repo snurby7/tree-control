@@ -34,7 +34,8 @@ import {
 
 @Component({
   selector: 'app-tree',
-  templateUrl: 'tree.component.html'
+  templateUrl: 'tree.component.html',
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeComponent implements OnInit, OnDestroy {
   @ContentChild('itemTemplate') itemTemplate: any;
@@ -157,7 +158,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  public SelectionToggle(node: FlatNode): void {
+  public selectionToggle(node: FlatNode): void {
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
