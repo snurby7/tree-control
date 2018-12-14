@@ -44,20 +44,21 @@ export class TreeComponent implements OnInit, OnDestroy {
   // this is callback to store the node expansion and once the data is set it will fire
   // the callback to open that node.
   private _runFunctionOnNextData: () => void = null;
-
-  public flatNodeMap = new Map<TodoItemFlatNode, TodoItemNode>();
+  private _nestedNodeMap = new Map<TodoItemNode, TodoItemFlatNode>();
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
-  public nestedNodeMap = new Map<TodoItemNode, TodoItemFlatNode>();
+  private _flatNodeMap = new Map<TodoItemFlatNode, TodoItemNode>();
+  private _subscriptions: Subscription[] = [];
+
   /** A selected parent node to be inserted */
   public selectedParent: TodoItemFlatNode | null = null;
   /** The new item's name */
   public newItemName = '';
+
   public treeControl: FlatTreeControl<TodoItemFlatNode>;
   public treeFlattener: MatTreeFlattener<TodoItemNode, TodoItemFlatNode>;
   public dataSource: MatTreeFlatDataSource<TodoItemNode, TodoItemFlatNode>;
   /** The selection for checklist */
   public checklistSelection = new SelectionModel<TodoItemFlatNode>(true, null, true);
-  private _subscriptions: Subscription[] = [];
 
   public maxLevel = 3;
   public get itemInAddState(): boolean {
@@ -68,30 +69,30 @@ export class TreeComponent implements OnInit, OnDestroy {
   public getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
   public hasChild = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.expandable;
   public hasNoContent = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.item === '';
+
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
   private _transformer = (node: TodoItemNode, level: number) => {
-    const existingNode = this.nestedNodeMap.get(node);
+    const existingNode = this._nestedNodeMap.get(node);
     const flatNode =  existingNode && existingNode.item === node.item
         ? existingNode
         : new TodoItemFlatNode();
-    console.log(node.item);
-    if(node.item.length) {
+    if (node.item.length) {
       flatNode.item = node.item;
     } else {
       flatNode.payload = node.item;
     }
     flatNode.level = level;
     flatNode.expandable = !!node.children;
-    this.flatNodeMap.set(flatNode, node);
-    this.nestedNodeMap.set(node, flatNode);
+    this._flatNodeMap.set(flatNode, node);
+    this._nestedNodeMap.set(node, flatNode);
     return flatNode;
   }
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
     this.treeFlattener = new MatTreeFlattener(
-      this._transformer,
+      this._transformer, /* Transformer is a declared as a lambda to keep proper context */
       this.getLevel,
       this.isExpandable,
       this.getChildren
@@ -170,7 +171,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   /** Select the category so we can insert the new item. */
   public addNewItem(node: TodoItemFlatNode) {
-    const parentNode = this.flatNodeMap.get(node);
+    const parentNode = this._flatNodeMap.get(node);
     if (!parentNode) {
       return;
     }
@@ -181,7 +182,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   /** Save the node to view model */
   public saveNode(node: TodoItemFlatNode, itemValue: string) {
-    const nestedNode = this.flatNodeMap.get(node);
+    const nestedNode = this._flatNodeMap.get(node);
     if (!nestedNode) {
       return;
     }

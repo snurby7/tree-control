@@ -99,8 +99,10 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public updateSelectedNodes(event: SelectionChange<any>): void {
-    console.log(event);
+  public updateSelectedNodes(event: SelectionChange<TodoItemNode>): void {
+    this._state.selectedNodes.push(event.added);
+    this._state.selectedNodes = this._state.selectedNodes.filter(x => !event.removed.some(removed => removed.key === x.key));
+    console.log(this._state.selectedNodes);
   }
 
   public updateDataSource(dataSource: any): void {
@@ -120,6 +122,7 @@ export class TreeViewModel implements ITreeViewModel {
 
   public updateItem(node: TodoItemNode, name: string) {
     node.item = name;
+    // TODO Enforce uniqueness on the nodes
     this._dataSource.next(this.data);
   }
 

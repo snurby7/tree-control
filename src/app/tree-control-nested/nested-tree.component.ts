@@ -44,7 +44,6 @@ export class NestedTreeComponent implements OnInit, OnDestroy {
   private _subscriptions: Subscription[] = [];
   private _getChildren = (node: NestedFileNode) => node.children;
 
-
   constructor() {
     this.nestedTreeControl = new NestedTreeControl<NestedFileNode>(
       this._getChildren
