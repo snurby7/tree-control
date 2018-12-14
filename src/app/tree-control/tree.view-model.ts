@@ -1,25 +1,26 @@
 import {
-  SelectionChange,
+  SelectionChange
 } from '@angular/cdk/collections';
+
 import {
   BehaviorSubject,
-  Observable,
+  Observable
 } from 'rxjs';
 
 import {
-  TodoItemFlatNode,
-} from './contracts/todo-item-flat-node.interface';
+  FlatNode
+} from './contracts/flat-node.interface';
 import {
-  TodoItemNode,
-} from './contracts/todo-item-node.interface';
+  Node
+} from './contracts/node.interface';
 import {
-  ITreeOptions,
+  ITreeOptions
 } from './tree-options.interface';
 import {
-  ITreeViewModel,
+  ITreeViewModel
 } from './tree.view-model.interface';
 
-export class TreeViewModel implements ITreeViewModel {
+export class TreeViewModel<TTreeNode extends Node, TFlatNode extends FlatNode> implements ITreeViewModel {
   private _state: any = {
     masterDataSource: Object,
     filteredDataSource: Object,
@@ -33,8 +34,8 @@ export class TreeViewModel implements ITreeViewModel {
     return this._collapseExpandAll.asObservable();
   }
 
-  private _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
-  public get dataSource(): Observable<TodoItemNode[]> {
+  private _dataSource: BehaviorSubject<TTreeNode[]> = new BehaviorSubject<TTreeNode[]>([]);
+  public get dataSource(): Observable<TTreeNode[]> {
     return this._dataSource.asObservable();
   }
 
@@ -43,7 +44,7 @@ export class TreeViewModel implements ITreeViewModel {
     return this._notifyTreeChange.asObservable();
   }
 
-  get data(): TodoItemNode[] {
+  get data(): TTreeNode[] {
     return this._dataSource.value;
   }
 
@@ -56,13 +57,13 @@ export class TreeViewModel implements ITreeViewModel {
     this.minimumNodes = this._options.maxNodeLevel || null;
   }
 
-  private buildFileTree(obj: any, level: number): TodoItemNode[] {
+  private buildFileTree(obj: any, level: number): TTreeNode[] {
     this._state.masterDataSource = obj;
     this._state.filterDataSource = obj;
 
-    return Object.keys(obj).reduce<TodoItemNode[]>((accumulator, key) => {
+    return Object.keys(obj).reduce<TTreeNode[]>((accumulator, key) => {
       const value = obj[key];
-      const node = new TodoItemNode();
+      const node = <TTreeNode>{};
       node.item = key;
 
       if (value != null) {
@@ -99,7 +100,7 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public updateSelectedNodes(event: SelectionChange<TodoItemNode>): void {
+  public updateSelectedNodes(event: SelectionChange<TTreeNode>): void {
     this._state.selectedNodes.push(event.added);
     this._state.selectedNodes = this._state.selectedNodes.filter(x => !event.removed.some(removed => removed.key === x.key));
     console.log(this._state.selectedNodes);
@@ -111,16 +112,16 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public insertItem(node: TodoItemFlatNode, parent: TodoItemNode, name: string) {
+  public insertItem(node: TFlatNode, parent: TTreeNode, name: string) {
     if (!parent.children) {
       parent.children = [];
     }
     node.expandable = true;
-    parent.children.push({ item: name } as TodoItemNode);
+    parent.children.push({ item: name } as TTreeNode);
     this._dataSource.next(this.data);
   }
 
-  public updateItem(node: TodoItemNode, name: string) {
+  public updateItem(node: TTreeNode, name: string) {
     node.item = name;
     // TODO Enforce uniqueness on the nodes
     this._dataSource.next(this.data);
@@ -141,5 +142,15 @@ export class TreeViewModel implements ITreeViewModel {
 
   public collapse(): void {
     this._collapseExpandAll.next(true);
+  }
+
+  public transformData(flatNode: TFlatNode, node: TTreeNode, level: number): void {
+    if (node.item.length) {
+      flatNode.item = node.item;
+    } else {
+      flatNode.payload = node.item;
+    }
+    flatNode.level = level;
+    flatNode.expandable = !!node.children;
   }
 }

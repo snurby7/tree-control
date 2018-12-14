@@ -1,4 +1,4 @@
-export class TodoItemFlatNode {
+export class FlatNode {
   item: string;
   level: number;
   payload: any;
