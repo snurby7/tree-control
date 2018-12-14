@@ -1,9 +1,20 @@
-import { SelectionChange } from '@angular/cdk/collections';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  SelectionChange,
+} from '@angular/cdk/collections';
+import {
+  BehaviorSubject,
+  Observable,
+} from 'rxjs';
 
-import { NestedFileNode } from './contracts/nested-node.interface';
-import { ITreeOptions } from './nested-tree-options.interface';
-import { INestedTreeViewModel } from './nested-tree.view-model.interface';
+import {
+  NestedFileNode,
+} from './contracts/nested-node.interface';
+import {
+  ITreeOptions,
+} from './nested-tree-options.interface';
+import {
+  INestedTreeViewModel,
+} from './nested-tree.view-model.interface';
 
 export class NestedTreeViewModel implements INestedTreeViewModel {
   private _state: any = {
@@ -55,7 +66,6 @@ export class NestedTreeViewModel implements INestedTreeViewModel {
   }
 
   public updateSelectedNodes(event: SelectionChange<any>): void {
-      console.log(event);
   }
 
   public updateDataSource(dataSource: any): void {

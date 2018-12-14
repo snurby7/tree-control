@@ -1,11 +1,30 @@
-import { SelectionChange, SelectionModel } from '@angular/cdk/collections';
-import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, ContentChild, Input, OnDestroy, OnInit } from '@angular/core';
-import { MatTreeNestedDataSource } from '@angular/material';
-import { Subscription } from 'rxjs';
+import {
+  SelectionChange,
+  SelectionModel,
+} from '@angular/cdk/collections';
+import {
+  NestedTreeControl,
+} from '@angular/cdk/tree';
+import {
+  Component,
+  ContentChild,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import {
+  MatTreeNestedDataSource,
+} from '@angular/material';
+import {
+  Subscription,
+} from 'rxjs';
 
-import { NestedFileNode } from './contracts/nested-node.interface';
-import { NestedTreeViewModel } from './nested-tree.view-model';
+import {
+  NestedFileNode,
+} from './contracts/nested-node.interface';
+import {
+  NestedTreeViewModel,
+} from './nested-tree.view-model';
 
 @Component({
   selector: 'app-tree-nested',
@@ -44,7 +63,6 @@ export class NestedTreeComponent implements OnInit, OnDestroy {
           return;
         }
         this.nestedDataSource.data = dataSource;
-        console.log(this.nestedDataSource.data);
       })
     );
 

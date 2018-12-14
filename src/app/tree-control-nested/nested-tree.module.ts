@@ -32,11 +32,11 @@ import {
     MatFormFieldModule,
     MatTreeModule,
     MatButtonModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   exports: [NestedTreeComponent],
   declarations: [NestedTreeComponent],
   entryComponents: [NestedTreeComponent],
-  providers: [NestedTreeFactory],
+  providers: [NestedTreeFactory]
 })
-export class NestedTreeModule { }
+export class NestedTreeModule {}

@@ -7,6 +7,9 @@ import {
 } from 'rxjs';
 
 import {
+  TodoItemFlatNode,
+} from './contracts/todo-item-flat-node.interface';
+import {
   TodoItemNode,
 } from './contracts/todo-item-node.interface';
 import {
@@ -26,25 +29,34 @@ export class TreeViewModel implements ITreeViewModel {
   public minimumNodes: number = null;
 
   private _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public get collapseExpandAll(): Observable<boolean> { return this._collapseExpandAll.asObservable(); }
+  public get collapseExpandAll(): Observable<boolean> {
+    return this._collapseExpandAll.asObservable();
+  }
 
   private _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
-  public get dataSource(): Observable<TodoItemNode[]> { return this._dataSource.asObservable(); }
+  public get dataSource(): Observable<TodoItemNode[]> {
+    return this._dataSource.asObservable();
+  }
 
   private _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
-  public get notifyTreeChange(): Observable<void> { return this._notifyTreeChange.asObservable(); }
+  public get notifyTreeChange(): Observable<void> {
+    return this._notifyTreeChange.asObservable();
+  }
 
-  get data(): TodoItemNode[] { return this._dataSource.value; }
+  get data(): TodoItemNode[] {
+    return this._dataSource.value;
+  }
 
-  constructor(
-    private _options: ITreeOptions
-  ) {
+  constructor(private _options: ITreeOptions) {
+    this._state.masterDataSource = this._options.dataSource;
+    this._state.filteredDataSource = this._options.dataSource;
+
     const data = this.buildFileTree(this._options.dataSource, 0);
     this._dataSource.next(data);
     this.minimumNodes = this._options.maxNodeLevel || null;
   }
 
-  buildFileTree(obj: object, level: number): TodoItemNode[] {
+  private buildFileTree(obj: any, level: number): TodoItemNode[] {
     this._state.masterDataSource = obj;
     this._state.filterDataSource = obj;
 
@@ -54,21 +66,23 @@ export class TreeViewModel implements ITreeViewModel {
       node.item = key;
 
       if (value != null) {
-        if (typeof value === 'object') {
+        // TODO could plug in here to hide a payload of sorts on the item
+        if (typeof value === 'object' && key !== 'payload') {
           node.children = this.buildFileTree(value, level + 1);
         } else {
+          node.payload = value;
           node.item = value;
+          node.key = key;
         }
       }
-
       return accumulator.concat(node);
     }, []);
   }
 
-  public updateSelectedNodeState(nodeClicked: { id: any; }): void {
+  public updateSelectedNodeState(nodeClicked: { id: any }): void {
     const selectedNodes: any = this._state.selectedNodes;
-    if (selectedNodes.some((node: { id: any; }) => node.id === nodeClicked.id)) {
-      selectedNodes.filter((node: { id: any; }) => node.id !== nodeClicked);
+    if (selectedNodes.some((node: { id: any }) => node.id === nodeClicked.id)) {
+      selectedNodes.filter((node: { id: any }) => node.id !== nodeClicked);
     } else {
       selectedNodes.push(nodeClicked);
     }
@@ -86,7 +100,7 @@ export class TreeViewModel implements ITreeViewModel {
   }
 
   public updateSelectedNodes(event: SelectionChange<any>): void {
-      console.log(event);
+    console.log(event);
   }
 
   public updateDataSource(dataSource: any): void {
@@ -95,10 +109,11 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public insertItem(parent: TodoItemNode, name: string) {
+  public insertItem(node: TodoItemFlatNode, parent: TodoItemNode, name: string) {
     if (!parent.children) {
       parent.children = [];
     }
+    node.expandable = true;
     parent.children.push({ item: name } as TodoItemNode);
     this._dataSource.next(this.data);
   }

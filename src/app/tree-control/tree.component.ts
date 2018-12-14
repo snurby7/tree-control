@@ -1,18 +1,40 @@
-import { SelectionChange, SelectionModel } from '@angular/cdk/collections';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { ChangeDetectorRef, Component, ContentChild, Input, OnDestroy, OnInit } from '@angular/core';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { Subscription } from 'rxjs';
+import {
+  SelectionChange,
+  SelectionModel,
+} from '@angular/cdk/collections';
+import {
+  FlatTreeControl,
+} from '@angular/cdk/tree';
+import {
+  ChangeDetectorRef,
+  Component,
+  ContentChild,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import {
+  MatTreeFlatDataSource,
+  MatTreeFlattener,
+} from '@angular/material/tree';
+import {
+  Subscription,
+} from 'rxjs';
 
-import { TodoItemFlatNode } from './contracts/todo-item-flat-node.interface';
-import { TodoItemNode } from './contracts/todo-item-node.interface';
-import { TreeViewModel } from './tree.view-model';
+import {
+  TodoItemFlatNode,
+} from './contracts/todo-item-flat-node.interface';
+import {
+  TodoItemNode,
+} from './contracts/todo-item-node.interface';
+import {
+  TreeViewModel,
+} from './tree.view-model';
 
 @Component({
   selector: 'app-tree',
   templateUrl: 'tree.component.html'
 })
-
 export class TreeComponent implements OnInit, OnDestroy {
   @ContentChild('itemTemplate') itemTemplate: any;
 
@@ -38,7 +60,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   private _subscriptions: Subscription[] = [];
 
   public maxLevel = 3;
-  public get itemInAddState(): boolean { return this._itemInAddState; }
+  public get itemInAddState(): boolean {
+    return this._itemInAddState;
+  }
   public getLevel = (node: TodoItemFlatNode) => node.level;
   public isExpandable = (node: TodoItemFlatNode) => node.expandable;
   public getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
@@ -49,8 +73,15 @@ export class TreeComponent implements OnInit, OnDestroy {
    */
   private _transformer = (node: TodoItemNode, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
-    const flatNode = existingNode && existingNode.item === node.item ? existingNode : new TodoItemFlatNode();
-    flatNode.item = node.item;
+    const flatNode =  existingNode && existingNode.item === node.item
+        ? existingNode
+        : new TodoItemFlatNode();
+    console.log(node.item);
+    if(node.item.length) {
+      flatNode.item = node.item;
+    } else {
+      flatNode.payload = node.item;
+    }
     flatNode.level = level;
     flatNode.expandable = !!node.children;
     this.flatNodeMap.set(flatNode, node);
@@ -59,30 +90,51 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
-    this.treeFlattener = new MatTreeFlattener(this._transformer, this.getLevel, this.isExpandable, this.getChildren);
-    this.treeControl = new FlatTreeControl<TodoItemFlatNode>(this.getLevel, this.isExpandable);
-    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+    this.treeFlattener = new MatTreeFlattener(
+      this._transformer,
+      this.getLevel,
+      this.isExpandable,
+      this.getChildren
+    );
+    this.treeControl = new FlatTreeControl<TodoItemFlatNode>(
+      this.getLevel,
+      this.isExpandable
+    );
+    this.dataSource = new MatTreeFlatDataSource(
+      this.treeControl,
+      this.treeFlattener
+    );
   }
 
   public ngOnInit(): void {
-    this._subscriptions.push(this.vm.collapseExpandAll.subscribe((collapse: boolean) => {
-      if (collapse) {
-        this.treeControl.collapseAll();
-      } else {
-        this.treeControl.expandAll();
-      }
-    }));
-    this._subscriptions.push(this.vm.dataSource.subscribe((dataSource: any) => {
-      if (!dataSource) { return; }
-      this.dataSource.data = dataSource;
-      if (this._runFunctionOnNextData) {
-        this._runFunctionOnNextData();
-        this._runFunctionOnNextData = null;
-      }
-    }));
-    this._subscriptions.push(this.checklistSelection.changed.subscribe((event: SelectionChange<any>) => {
-      this.vm.updateSelectedNodes(event);
-    }));
+    this._subscriptions.push(
+      this.vm.collapseExpandAll.subscribe((collapse: boolean) => {
+        if (collapse) {
+          this.treeControl.collapseAll();
+        } else {
+          this.treeControl.expandAll();
+        }
+      })
+    );
+    this._subscriptions.push(
+      this.vm.dataSource.subscribe((dataSource: any) => {
+        if (!dataSource) {
+          return;
+        }
+        this.dataSource.data = dataSource;
+        if (this._runFunctionOnNextData) {
+          this._runFunctionOnNextData();
+          this._runFunctionOnNextData = null;
+        }
+      })
+    );
+    this._subscriptions.push(
+      this.checklistSelection.changed.subscribe(
+        (event: SelectionChange<any>) => {
+          this.vm.updateSelectedNodes(event);
+        }
+      )
+    );
     this.maxLevel = this.vm.minimumNodes;
   }
 
@@ -93,13 +145,17 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** Whether all the descendants of the node are selected */
   public descendantsAllSelected(node: TodoItemFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    return descendants.every(child => this.checklistSelection.isSelected(child));
+    return descendants.every(child =>
+      this.checklistSelection.isSelected(child)
+    );
   }
 
   /** Whether part of the descendants are selected */
   public descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    const result = descendants.some(child => this.checklistSelection.isSelected(child));
+    const result = descendants.some(child =>
+      this.checklistSelection.isSelected(child)
+    );
     return result && !this.descendantsAllSelected(node);
   }
 
@@ -115,8 +171,10 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** Select the category so we can insert the new item. */
   public addNewItem(node: TodoItemFlatNode) {
     const parentNode = this.flatNodeMap.get(node);
-    if (!parentNode) { return; }
-    this.vm.insertItem(parentNode, '');
+    if (!parentNode) {
+      return;
+    }
+    this.vm.insertItem(node, parentNode, '');
     this._itemInAddState = true;
     this._runFunctionOnNextData = () => this.treeControl.expand(node);
   }
@@ -124,7 +182,9 @@ export class TreeComponent implements OnInit, OnDestroy {
   /** Save the node to view model */
   public saveNode(node: TodoItemFlatNode, itemValue: string) {
     const nestedNode = this.flatNodeMap.get(node);
-    if (!nestedNode) { return; }
+    if (!nestedNode) {
+      return;
+    }
     this.vm.updateItem(nestedNode, itemValue);
     this._itemInAddState = false;
     this._runFunctionOnNextData = () => this.changeDetectorRef.detectChanges();
