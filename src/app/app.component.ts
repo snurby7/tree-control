@@ -1,6 +1,9 @@
 import {
   Component,
 } from '@angular/core';
+import {
+  BehaviorSubject,
+} from 'rxjs';
 
 import {
   NestedTreeFactory,
@@ -19,6 +22,7 @@ const TREE_DATA = {
   Groceries: {
     'Almond Meal flour': {
       payload: {
+        isHidden: new BehaviorSubject<boolean>(true),
         value: 'waffles are good',
         test2: 'cheetoh'
       }

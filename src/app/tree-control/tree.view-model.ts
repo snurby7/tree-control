@@ -4,6 +4,7 @@ import {
 import {
   BehaviorSubject,
   Observable,
+  of,
 } from 'rxjs';
 
 import {
@@ -28,17 +29,23 @@ export class TreeViewModel implements ITreeViewModel {
 
   public minimumNodes: number = null;
 
-  private _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<
+    boolean
+  >(false);
   public get collapseExpandAll(): Observable<boolean> {
     return this._collapseExpandAll.asObservable();
   }
 
-  private _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
+  private _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<
+    TodoItemNode[]
+  >([]);
   public get dataSource(): Observable<TodoItemNode[]> {
     return this._dataSource.asObservable();
   }
 
-  private _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
+  private _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(
+    null
+  );
   public get notifyTreeChange(): Observable<void> {
     return this._notifyTreeChange.asObservable();
   }
@@ -60,23 +67,33 @@ export class TreeViewModel implements ITreeViewModel {
     this._state.masterDataSource = obj;
     this._state.filterDataSource = obj;
 
-    return Object.keys(obj).reduce<TodoItemNode[]>((accumulator, key) => {
-      const value = obj[key];
-      const node = new TodoItemNode();
-      node.item = key;
-
-      if (value != null) {
-        // TODO could plug in here to hide a payload of sorts on the item
-        if (typeof value === 'object' && key !== 'payload') {
-          node.children = this.buildFileTree(value, level + 1);
-        } else {
-          node.payload = value;
-          node.item = value;
-          node.key = key;
+    const treeData = Object.keys(obj).reduce<TodoItemNode[]>(
+      (accumulator, key) => {
+        const value = obj[key];
+        console.log(value);
+        if (value && value.payload) {
+          if (value.payload.isHidden) {
+            const isHidden = value.payload.isHidden.value;
+            if (isHidden) {return accumulator; }
+          }
         }
-      }
-      return accumulator.concat(node);
-    }, []);
+        const node = new TodoItemNode();
+        node.item = key;
+        if (value != null) {
+          // TODO could plug in here to hide a payload of sorts on the item
+          if (typeof value === 'object' && key !== 'payload' && key !== 'isHidden') {
+            node.children = this.buildFileTree(value, level + 1);
+          } else {
+            node.key = key;
+            node.payload = value;
+            node.item = value;
+          }
+        }
+        return accumulator.concat(node);
+      },
+      []
+    );
+    return treeData;
   }
 
   public updateSelectedNodeState(nodeClicked: { id: any }): void {
@@ -92,7 +109,10 @@ export class TreeViewModel implements ITreeViewModel {
   public filterDataSource(filterText: string): void {
     if (this._options.onFilterChange) {
       const masterCopy: any = this._state.masterDataSource;
-      this._state.filteredDataSource = this._options.onFilterChange(masterCopy, filterText);
+      this._state.filteredDataSource = this._options.onFilterChange(
+        masterCopy,
+        filterText
+      );
     } else {
       this._state.filteredDataSource = []; /* Do some filtering on the masterDataSource */
     }
@@ -101,7 +121,9 @@ export class TreeViewModel implements ITreeViewModel {
 
   public updateSelectedNodes(event: SelectionChange<TodoItemNode>): void {
     this._state.selectedNodes.push(event.added);
-    this._state.selectedNodes = this._state.selectedNodes.filter(x => !event.removed.some(removed => removed.key === x.key));
+    this._state.selectedNodes = this._state.selectedNodes.filter(
+      x => !event.removed.some(removed => removed.key === x.key)
+    );
     console.log(this._state.selectedNodes);
   }
 
@@ -111,12 +133,16 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public insertItem(node: TodoItemFlatNode, parent: TodoItemNode, name: string) {
+  public insertItem(
+    node: TodoItemFlatNode,
+    parent: TodoItemNode,
+    name: string
+  ) {
     if (!parent.children) {
       parent.children = [];
     }
     node.expandable = true;
-    parent.children.push({ item: name } as TodoItemNode);
+    parent.children.push({ item: name, isHidden: of(false) } as TodoItemNode);
     this._dataSource.next(this.data);
   }
 

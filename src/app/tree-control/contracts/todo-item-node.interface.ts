@@ -1,6 +1,12 @@
+import {
+  Observable,
+  of,
+} from 'rxjs';
+
 export class TodoItemNode {
   children: TodoItemNode[];
-  item: string;
+  item: any;
   key: string;
   payload: any;
+  isHidden?: Observable<boolean> = of(false);
 }

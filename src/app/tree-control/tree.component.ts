@@ -6,6 +6,7 @@ import {
   FlatTreeControl,
 } from '@angular/cdk/tree';
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChild,
@@ -33,7 +34,8 @@ import {
 
 @Component({
   selector: 'app-tree',
-  templateUrl: 'tree.component.html'
+  templateUrl: 'tree.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeComponent implements OnInit, OnDestroy {
   @ContentChild('itemTemplate') itemTemplate: any;
@@ -58,7 +60,11 @@ export class TreeComponent implements OnInit, OnDestroy {
   public treeFlattener: MatTreeFlattener<TodoItemNode, TodoItemFlatNode>;
   public dataSource: MatTreeFlatDataSource<TodoItemNode, TodoItemFlatNode>;
   /** The selection for checklist */
-  public checklistSelection = new SelectionModel<TodoItemFlatNode>(true, null, true);
+  public checklistSelection = new SelectionModel<TodoItemFlatNode>(
+    true,
+    null,
+    true
+  );
 
   public maxLevel = 3;
   public get itemInAddState(): boolean {
@@ -67,15 +73,17 @@ export class TreeComponent implements OnInit, OnDestroy {
   public getLevel = (node: TodoItemFlatNode) => node.level;
   public isExpandable = (node: TodoItemFlatNode) => node.expandable;
   public getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
-  public hasChild = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.expandable;
-  public hasNoContent = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.item === '';
+  public hasChild = (_: number, _nodeData: TodoItemFlatNode) =>
+    _nodeData.expandable
+  public hasNoContent = (_: number, _nodeData: TodoItemFlatNode) =>
+    _nodeData.payload === '' || _nodeData.item === ''
 
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
   private _transformer = (node: TodoItemNode, level: number) => {
     const existingNode = this._nestedNodeMap.get(node);
-    const flatNode =  existingNode && existingNode.item === node.item
+    const flatNode = existingNode && existingNode.item === node.item
         ? existingNode
         : new TodoItemFlatNode();
     if (node.item.length) {
@@ -92,7 +100,7 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
     this.treeFlattener = new MatTreeFlattener(
-      this._transformer, /* Transformer is a declared as a lambda to keep proper context */
+      this._transformer /* Transformer is a declared as a lambda to keep proper context */,
       this.getLevel,
       this.isExpandable,
       this.getChildren
