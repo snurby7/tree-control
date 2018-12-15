@@ -23,11 +23,11 @@ import {
 } from 'rxjs';
 
 import {
-  TodoItemFlatNode,
-} from './contracts/todo-item-flat-node.interface';
+  FlatNode,
+} from './contracts/flat-node.interface';
 import {
-  TodoItemNode,
-} from './contracts/todo-item-node.interface';
+  Node,
+} from './contracts/node.interface';
 import {
   TreeViewModel,
 } from './tree.view-model';
@@ -40,52 +40,46 @@ import {
 export class TreeComponent implements OnInit, OnDestroy {
   @ContentChild('itemTemplate') itemTemplate: any;
 
-  @Input() vm: TreeViewModel;
+  @Input() vm: TreeViewModel<any, any>;
 
   private _itemInAddState = false;
   // this is callback to store the node expansion and once the data is set it will fire
   // the callback to open that node.
   private _runFunctionOnNextData: () => void = null;
-  private _nestedNodeMap = new Map<TodoItemNode, TodoItemFlatNode>();
+  private _nestedNodeMap = new Map<Node, FlatNode>();
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
-  private _flatNodeMap = new Map<TodoItemFlatNode, TodoItemNode>();
+  private _flatNodeMap = new Map<FlatNode, Node>();
   private _subscriptions: Subscription[] = [];
 
   /** A selected parent node to be inserted */
-  public selectedParent: TodoItemFlatNode | null = null;
+  public selectedParent: FlatNode | null = null;
   /** The new item's name */
   public newItemName = '';
 
-  public treeControl: FlatTreeControl<TodoItemFlatNode>;
-  public treeFlattener: MatTreeFlattener<TodoItemNode, TodoItemFlatNode>;
-  public dataSource: MatTreeFlatDataSource<TodoItemNode, TodoItemFlatNode>;
+  public treeControl: FlatTreeControl<FlatNode>;
+  public treeFlattener: MatTreeFlattener<Node, FlatNode>;
+  public dataSource: MatTreeFlatDataSource<Node, FlatNode>;
   /** The selection for checklist */
-  public checklistSelection = new SelectionModel<TodoItemFlatNode>(
-    true,
-    null,
-    true
-  );
+  public checklistSelection = new SelectionModel<FlatNode>(true, null, true);
 
   public maxLevel = 3;
   public get itemInAddState(): boolean {
     return this._itemInAddState;
   }
-  public getLevel = (node: TodoItemFlatNode) => node.level;
-  public isExpandable = (node: TodoItemFlatNode) => node.expandable;
-  public getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
-  public hasChild = (_: number, _nodeData: TodoItemFlatNode) =>
-    _nodeData.expandable
-  public hasNoContent = (_: number, _nodeData: TodoItemFlatNode) =>
-    _nodeData.payload === '' || _nodeData.item === ''
+  public getLevel = (node: FlatNode) => node.level;
+  public isExpandable = (node: FlatNode) => node.expandable;
+  public getChildren = (node: Node): Node[] => node.children;
+  public hasChild = (_: number, _nodeData: FlatNode) => _nodeData.expandable;
+  public hasNoContent = (_: number, _nodeData: FlatNode) => _nodeData.payload === '' || _nodeData.item === '';
 
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
-  private _transformer = (node: TodoItemNode, level: number) => {
+  private _transformer = (node: Node, level: number) => {
     const existingNode = this._nestedNodeMap.get(node);
     const flatNode = existingNode && existingNode.item === node.item
         ? existingNode
-        : new TodoItemFlatNode();
+        : new FlatNode();
     if (node.item.length) {
       flatNode.item = node.item;
     } else {
@@ -93,6 +87,7 @@ export class TreeComponent implements OnInit, OnDestroy {
     }
     flatNode.level = level;
     flatNode.expandable = !!node.children;
+    this.vm.transformData(flatNode, node, level);
     this._flatNodeMap.set(flatNode, node);
     this._nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -105,7 +100,7 @@ export class TreeComponent implements OnInit, OnDestroy {
       this.isExpandable,
       this.getChildren
     );
-    this.treeControl = new FlatTreeControl<TodoItemFlatNode>(
+    this.treeControl = new FlatTreeControl<FlatNode>(
       this.getLevel,
       this.isExpandable
     );
@@ -116,6 +111,8 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.maxLevel = this.vm.minimumNodes;
+
     this._subscriptions.push(
       this.vm.collapseExpandAll.subscribe((collapse: boolean) => {
         if (collapse) {
@@ -144,7 +141,6 @@ export class TreeComponent implements OnInit, OnDestroy {
         }
       )
     );
-    this.maxLevel = this.vm.minimumNodes;
   }
 
   public ngOnDestroy(): void {
@@ -152,7 +148,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   /** Whether all the descendants of the node are selected */
-  public descendantsAllSelected(node: TodoItemFlatNode): boolean {
+  public descendantsAllSelected(node: FlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     return descendants.every(child =>
       this.checklistSelection.isSelected(child)
@@ -160,7 +156,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   /** Whether part of the descendants are selected */
-  public descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
+  public descendantsPartiallySelected(node: FlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const result = descendants.some(child =>
       this.checklistSelection.isSelected(child)
@@ -169,7 +165,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  public todoItemSelectionToggle(node: TodoItemFlatNode): void {
+  public selectionToggle(node: FlatNode): void {
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
@@ -178,7 +174,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   /** Select the category so we can insert the new item. */
-  public addNewItem(node: TodoItemFlatNode) {
+  public addNewItem(node: FlatNode) {
     const parentNode = this._flatNodeMap.get(node);
     if (!parentNode) {
       return;
@@ -189,7 +185,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   }
 
   /** Save the node to view model */
-  public saveNode(node: TodoItemFlatNode, itemValue: string) {
+  public saveNode(node: FlatNode, itemValue: string) {
     const nestedNode = this._flatNodeMap.get(node);
     if (!nestedNode) {
       return;

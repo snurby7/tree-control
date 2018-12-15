@@ -1,0 +1,98 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4,
+    "editor.wordWrap": "off",
+    "files.exclude": {
+      "**/.awcache": true,
+      "**/.DS_Store": true,
+      "**/.git": true,
+      "**/.tscache": true,
+      "**/*.map": true,
+      "**/*.properties": true,
+      "**/*.sln": true,
+      "**/*.vspscc": true,
+      "**/*.vssscc": true,
+      "**/*.zip": true,
+      "**/bin": true,
+      "**/build": true,
+      "**/build_src": true,
+      "**/ci-build": true,
+      "**/coverage": true,
+      "**/dist": true,
+      "**/docs": true,
+      "**/help": true,
+      "**/helpers": true,
+      "**/karma_html": true,
+      "**/lib": true,
+      "**/node_modules": true,
+      "**/node_modules/.*/**": true,
+      "node_modules": true,
+      "**/nws-docs": true,
+      "**/obj": true,
+      "**/plato-reports": true,
+      "**/Properties": true,
+      "**/staging": true,
+      "**/*.tgz": true,
+      "**/*.d.ts": true,
+      "**/test-src": true,
+      "**/tests": true,
+      "**/*.js": {
+        "when": "$(basename).ts"
+      },
+      "**/*.css": {
+        "when": "$(basename).scss"
+      },
+      "npm-debug.log.*": true,
+      "test-results.testxml": true,
+      "tscommand*.tmp.txt": true,
+      "**/test": true
+    },
+    "files.trimTrailingWhitespace": true,
+    "html.format.wrapAttributes": "force-aligned",
+    "html.format.wrapLineLength": 0,
+    "todohighlight.keywords": [
+      { //this block will override the built-in keyword `TODO:` and give it new style
+        "text": "// TODO:",
+        "color": "#00dfff",
+        "backgroundColor": ""
+      },
+      { //this block will override the built-in keyword `TODO:` and give it new style
+        "text": "//TODO:",
+        "color": "#00dfff",
+        "backgroundColor": ""
+      },
+      { //this block will override the built-in keyword `TODO:` and give it new style
+        "text": "TODO:",
+        "color": "#00dfff",
+        "backgroundColor": ""
+      }
+    ],
+    "typescript.autoImportSuggestions.enabled": false,
+    "typescript.check.npmIsInstalled": false,
+    "window.title": "${dirty}${activeEditorLong}",
+    "typescriptHero.codeOutline.enabled": false,
+    "typescriptHero.imports.grouping": [
+      "Plains",
+      "/@angular/",
+      "/rxjs/",
+      "Modules",
+      "/@nwps/",
+      "Remaining",
+      "Workspace"
+    ],
+    "typescriptHero.imports.insertSpaceBeforeAndAfterImportBraces": true,
+    "typescriptHero.imports.insertSemicolons": true,
+    "typescriptHero.imports.multiLineWrapThreshold": 1,
+    "typescriptHero.imports.multiLineTrailingComma": false,
+    "typescriptHero.imports.stringQuoteStyle": "'",
+    "typescript.tsdk": "nws-records-components\\node_modules\\typescript\\lib",
+  }
+}

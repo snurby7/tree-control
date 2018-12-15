@@ -4,15 +4,14 @@ import {
 import {
   BehaviorSubject,
   Observable,
-  of,
 } from 'rxjs';
 
 import {
-  TodoItemFlatNode,
-} from './contracts/todo-item-flat-node.interface';
+  FlatNode,
+} from './contracts/flat-node.interface';
 import {
-  TodoItemNode,
-} from './contracts/todo-item-node.interface';
+  Node,
+} from './contracts/node.interface';
 import {
   ITreeOptions,
 } from './tree-options.interface';
@@ -20,7 +19,7 @@ import {
   ITreeViewModel,
 } from './tree.view-model.interface';
 
-export class TreeViewModel implements ITreeViewModel {
+export class TreeViewModel<TTreeNode extends Node, TFlatNode extends FlatNode> implements ITreeViewModel {
   private _state: any = {
     masterDataSource: Object,
     filteredDataSource: Object,
@@ -29,30 +28,16 @@ export class TreeViewModel implements ITreeViewModel {
 
   public minimumNodes: number = null;
 
-  private _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<
-    boolean
-  >(false);
-  public get collapseExpandAll(): Observable<boolean> {
-    return this._collapseExpandAll.asObservable();
-  }
+  private _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public get collapseExpandAll(): Observable<boolean> { return this._collapseExpandAll.asObservable(); }
 
-  private _dataSource: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<
-    TodoItemNode[]
-  >([]);
-  public get dataSource(): Observable<TodoItemNode[]> {
-    return this._dataSource.asObservable();
-  }
+  private _dataSource: BehaviorSubject<TTreeNode[]> = new BehaviorSubject<TTreeNode[]>([]);
+  public get dataSource(): Observable<TTreeNode[]> { return this._dataSource.asObservable(); }
 
-  private _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(
-    null
-  );
-  public get notifyTreeChange(): Observable<void> {
-    return this._notifyTreeChange.asObservable();
-  }
+  private _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
+  public get notifyTreeChange(): Observable<void> { return this._notifyTreeChange.asObservable(); }
 
-  get data(): TodoItemNode[] {
-    return this._dataSource.value;
-  }
+  get data(): TTreeNode[] { return this._dataSource.value; }
 
   constructor(private _options: ITreeOptions) {
     this._state.masterDataSource = this._options.dataSource;
@@ -63,37 +48,33 @@ export class TreeViewModel implements ITreeViewModel {
     this.minimumNodes = this._options.maxNodeLevel || null;
   }
 
-  private buildFileTree(obj: any, level: number): TodoItemNode[] {
+  private buildFileTree(obj: any, level: number): TTreeNode[] {
+    console.log(obj);
     this._state.masterDataSource = obj;
     this._state.filterDataSource = obj;
 
-    const treeData = Object.keys(obj).reduce<TodoItemNode[]>(
-      (accumulator, key) => {
-        const value = obj[key];
-        console.log(value);
-        if (value && value.payload) {
-          if (value.payload.isHidden) {
-            const isHidden = value.payload.isHidden.value;
-            if (isHidden) {return accumulator; }
-          }
+    return Object.keys(obj).reduce<TTreeNode[]>((accumulator, key) => {
+      const value = obj[key];
+      if (value && value.payload) {
+        if (value.payload.isHidden) {
+          const isHidden = value.payload.isHidden.value;
+          if (isHidden) {return accumulator; }
         }
-        const node = new TodoItemNode();
-        node.item = key;
-        if (value != null) {
-          // TODO could plug in here to hide a payload of sorts on the item
-          if (typeof value === 'object' && key !== 'payload' && key !== 'isHidden') {
-            node.children = this.buildFileTree(value, level + 1);
-          } else {
-            node.key = key;
-            node.payload = value;
-            node.item = value;
-          }
+      }
+      const node = <TTreeNode>{};
+      node.item = key;
+      if (value != null) {
+        // TODO could plug in here to hide a payload of sorts on the item
+        if (typeof value === 'object' && key !== 'payload' && key !== 'isHidden') {
+          node.children = this.buildFileTree(value, level + 1);
+        } else {
+          node.key = key;
+          node.payload = value;
+          node.item = value;
         }
-        return accumulator.concat(node);
-      },
-      []
-    );
-    return treeData;
+      }
+      return accumulator.concat(node);
+    }, []);
   }
 
   public updateSelectedNodeState(nodeClicked: { id: any }): void {
@@ -119,7 +100,7 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public updateSelectedNodes(event: SelectionChange<TodoItemNode>): void {
+  public updateSelectedNodes(event: SelectionChange<TTreeNode>): void {
     this._state.selectedNodes.push(event.added);
     this._state.selectedNodes = this._state.selectedNodes.filter(
       x => !event.removed.some(removed => removed.key === x.key)
@@ -133,20 +114,16 @@ export class TreeViewModel implements ITreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public insertItem(
-    node: TodoItemFlatNode,
-    parent: TodoItemNode,
-    name: string
-  ) {
+  public insertItem(node: TFlatNode, parent: TTreeNode, name: string) {
     if (!parent.children) {
       parent.children = [];
     }
     node.expandable = true;
-    parent.children.push({ item: name, isHidden: of(false) } as TodoItemNode);
+    parent.children.push({ item: name } as TTreeNode);
     this._dataSource.next(this.data);
   }
 
-  public updateItem(node: TodoItemNode, name: string) {
+  public updateItem(node: TTreeNode, name: string) {
     node.item = name;
     // TODO Enforce uniqueness on the nodes
     this._dataSource.next(this.data);
@@ -167,5 +144,15 @@ export class TreeViewModel implements ITreeViewModel {
 
   public collapse(): void {
     this._collapseExpandAll.next(true);
+  }
+
+  public transformData(flatNode: TFlatNode, node: TTreeNode, level: number): void {
+    if (node.item.length) {
+      flatNode.item = node.item;
+    } else {
+      flatNode.payload = node.item;
+    }
+    flatNode.level = level;
+    flatNode.expandable = !!node.children;
   }
 }
