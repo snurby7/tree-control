@@ -58,7 +58,7 @@ export class EditTreeComponent extends BaseTreeComponent implements OnInit, OnDe
   }
 
   /** Select the category so we can insert the new item. */
-  public addNewItem(node: FlatNode) {
+  public addNewItem(node: FlatNode): void {
     const parentNode = this._flatNodeMap.get(node);
     if (!parentNode) {
       return;
@@ -69,7 +69,7 @@ export class EditTreeComponent extends BaseTreeComponent implements OnInit, OnDe
   }
 
   /** Save the node to view model */
-  public saveNode(node: FlatNode, itemValue: string) {
+  public saveNode(node: FlatNode, itemValue: string): void {
     const nestedNode = this._flatNodeMap.get(node);
     if (!nestedNode) {
       return;

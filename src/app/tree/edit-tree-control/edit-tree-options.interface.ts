@@ -4,7 +4,6 @@ import {
 
 export interface IEditTreeOptions extends IBaseTreeOptions {
   maxNodeLevel?: number;
-  onFilterChange?: (dataSource: any, filterText: string) => Object;
   minimumCharactersBeforeFilter?: number;
   hideExpandAll?: boolean;
 }

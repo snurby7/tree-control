@@ -74,10 +74,6 @@ export abstract class BaseTreeComponent implements OnInit, OnDestroy {
     return flatNode;
   }
 
-  constructor() {
-
-  }
-
   public ngOnInit() {
     this.treeFlattener = new MatTreeFlattener(
       this._transformer /* Transformer is a declared as a lambda to keep proper context */,
