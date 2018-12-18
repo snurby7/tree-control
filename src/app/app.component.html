@@ -1,32 +1,26 @@
 <div>
-    <h2>Flat Tree</h2>
-    <button mat-button
-        (click)="treeVM.expand()">Expand</button>
-    <button mat-button
-        (click)="treeVM.collapse()">Collapse</button>
-    <app-tree *ngIf="treeVM"
-        [vm]="treeVM">
-        <ng-template #itemTemplate
-            let-node>
-            <div (click)="onClick(node)">
-                {{node?.item}}{{node?.payload?.value}}
-            </div>
-        </ng-template>
-    </app-tree>
-</div>
-<div>
-    <h2>
-        Nested Tree
-    </h2>
-    <app-tree-nested *ngIf="nestedTreeVM"
-        [vm]="nestedTreeVM">
-        <ng-template #itemLeadNodeTemplate
-            let-node>
-            {{node?.filename}}
-        </ng-template>
-        <ng-template #itemNodeTemplate
-            let-node>
-            {{node?.filename}}:{{node?.type}}
-        </ng-template>
-    </app-tree-nested>
+  <h2>Edit Tree Below</h2>
+  <button mat-button
+          (click)="editTreeVM.expand()">Expand</button>
+  <button mat-button
+          (click)="editTreeVM.collapse()">Collapse</button>
+  <app-edit-tree *ngIf="editTreeVM"
+                 [vm]="editTreeVM">
+    <ng-template #itemTemplate
+                 let-node>
+      <div (click)="onClick(node)">
+        {{node?.item}}{{node?.payload?.value}}
+      </div>
+    </ng-template>
+  </app-edit-tree>
+  <h2>View Tree Below</h2>
+  <app-view-tree *ngIf="viewTreeVM"
+                 [vm]="viewTreeVM">
+    <ng-template #itemTemplate
+                 let-node>
+      <div (click)="onClick(node)">
+        {{node?.item}}{{node?.payload?.value}}
+      </div>
+    </ng-template>
+  </app-view-tree>
 </div>

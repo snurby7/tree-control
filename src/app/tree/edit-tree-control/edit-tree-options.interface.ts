@@ -1,7 +1,8 @@
-export interface ITreeOptions {
-  dataSource: Object;
-  showComboBox: boolean;
-  isViewOnly: boolean;
+import {
+  IBaseTreeOptions
+} from '../contracts/base-tree.options.interface';
+
+export interface IEditTreeOptions extends IBaseTreeOptions {
   maxNodeLevel?: number;
   onFilterChange?: (dataSource: any, filterText: string) => Object;
   minimumCharactersBeforeFilter?: number;

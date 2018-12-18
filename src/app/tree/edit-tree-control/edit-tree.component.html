@@ -6,16 +6,18 @@
                  matTreeNodePadding>
     <button mat-icon-button
             disabled></button>
-    <mat-checkbox class="checklist-leaf-node"
+    <!-- <mat-checkbox class="checklist-leaf-node"
                   [checked]="checklistSelection.isSelected(node)"
-                  (change)="checklistSelection.toggle(node)"></mat-checkbox>
+                  (change)="checklistSelection.toggle(node)"></mat-checkbox> -->
+    <button mat-button
+            [matMenuTriggerFor]="menu">Menu</button>
     <ng-container *ngTemplateOutlet="itemTemplate; context: {$implicit: node}"></ng-container>
-    <button mat-icon-button
+    <!-- <button mat-icon-button
             [disabled]="itemInAddState"
             *ngIf="node.level < maxLevel"
             (click)="addNewItem(node)">
       <mat-icon>add</mat-icon>
-    </button>
+    </button> -->
   </mat-tree-node>
 
   <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent"
@@ -40,15 +42,21 @@
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    <mat-checkbox [checked]="descendantsAllSelected(node)"
-                  [indeterminate]="descendantsPartiallySelected(node)"
+    <button mat-button
+            [matMenuTriggerFor]="menu">Menu</button>
+    <!-- <mat-checkbox [checked]="descendantsAllSelected(node)"
                   (change)="selectionToggle(node)">
-      <ng-container *ngTemplateOutlet="itemTemplate; context: {$implicit: node}"></ng-container>
-    </mat-checkbox>
-    <button mat-icon-button
+                </mat-checkbox> -->
+    <ng-container *ngTemplateOutlet="itemTemplate; context: {$implicit: node}"></ng-container>
+    <!-- <button mat-icon-button
             [disabled]="itemInAddState"
             (click)="addNewItem(node)">
       <mat-icon>add</mat-icon>
-    </button>
+    </button> -->
   </mat-tree-node>
 </mat-tree>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Action Item 1</button>
+  <button mat-menu-item>Action Item 2</button>
+</mat-menu>

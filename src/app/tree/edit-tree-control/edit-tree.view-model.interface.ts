@@ -1,4 +1,4 @@
-export interface ITreeViewModel {
+export interface IEditTreeViewModel {
   updateSelectedNodeState: (nodeClicked: { id: any; }) => void;
   filterDataSource: (filterText: string) => void;
   updateDataSource: (dataSource: any) => void;

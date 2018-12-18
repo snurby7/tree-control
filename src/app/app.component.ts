@@ -1,37 +1,32 @@
 import {
-  Component,
+  Component
 } from '@angular/core';
+
 import {
-  BehaviorSubject,
+  BehaviorSubject
 } from 'rxjs';
 
 import {
-  NestedTreeFactory,
-} from './tree-control-nested/nested-tree.factory';
-import {
-  INestedTreeViewModel,
-} from './tree-control-nested/nested-tree.view-model.interface';
-import {
-  TreeFactory,
-} from './tree-control/tree.factory';
-import {
-  ITreeViewModel,
-} from './tree-control/tree.view-model.interface';
+  EditTreeFactory,
+  IEditTreeViewModel,
+  ViewTreeFactory,
+  ViewTreeViewModel
+} from './tree';
+
 
 const TREE_DATA = {
   Groceries: {
     'Almond Meal flour': {
       payload: {
         isHidden: new BehaviorSubject<boolean>(true),
-        value: 'waffles are good',
-        test2: 'cheetoh'
+        value: 'waffles are good'
       }
     },
     'Organic eggs': null,
     'Protein Powder': null,
     Fruits: {
       Apple: null,
-      Berries: ['Blueberry', 'Raspberry'],
+      Berries: ['Blueberry', 'Raspberry', 'Cheetohs'],
       Orange: null
     }
   },
@@ -42,61 +37,24 @@ const TREE_DATA = {
   ]
 };
 
-const NESTED_TREE_DATA = {
-  Applications: {
-    Calendar: 'app',
-    Chrome: 'app',
-    Webstorm: 'app'
-  },
-  Documents: {
-    angular: {
-      src: {
-        compiler: 'ts',
-        core: 'ts'
-      }
-    },
-    material2: {
-      src: {
-        button: 'ts',
-        checkbox: 'ts',
-        input: 'ts'
-      }
-    }
-  },
-  Downloads: {
-    October: 'pdf',
-    November: 'pdf',
-    Tutorial: 'html'
-  },
-  Pictures: {
-    'Photo Booth Library': {
-      Contents: 'dir',
-      Pictures: 'dir'
-    },
-    Sun: 'png',
-    Woods: 'jpg'
-  }
-};
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  public treeVM: ITreeViewModel;
-  public nestedTreeVM: INestedTreeViewModel;
+  public editTreeVM: IEditTreeViewModel;
+  public viewTreeVM: ViewTreeViewModel;
 
-  constructor(treeFactory: TreeFactory, nestedTreeFactory: NestedTreeFactory) {
-    this.treeVM = treeFactory.create({
-      dataSource: TREE_DATA,
-      showComboBox: false,
-      isViewOnly: false,
-      maxNodeLevel: 3
+  constructor(
+    editTreeFactory: EditTreeFactory,
+    viewTreeFactory: ViewTreeFactory
+  ) {
+    this.editTreeVM = editTreeFactory.create({
+      dataSource: TREE_DATA
     });
-
-    this.nestedTreeVM = nestedTreeFactory.create({
-      dataSource: NESTED_TREE_DATA
+    this.viewTreeVM = viewTreeFactory.create({
+      dataSource: TREE_DATA
     });
   }
 
