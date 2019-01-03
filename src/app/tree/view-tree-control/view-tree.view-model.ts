@@ -1,19 +1,9 @@
-import {
-  SelectionChange
-} from '@angular/cdk/collections';
+import { SelectionChange } from '@angular/cdk/collections';
 
-import {
-  BaseTreeViewModel
-} from '../base/base-tree.view-model';
-import {
-  FlatNode
-} from '../contracts/flat-node.interface';
-import {
-  Node
-} from '../contracts/node.interface';
-import {
-  IViewTreeOptions
-} from './view-tree-options.interface';
+import { BaseTreeViewModel } from '../base/base-tree.view-model';
+import { FlatNode } from '../contracts/flat-node.interface';
+import { Node } from '../contracts/node.interface';
+import { IViewTreeOptions } from './view-tree-options.interface';
 
 export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends FlatNode = any> extends BaseTreeViewModel {
   private _options: IViewTreeOptions = null;
@@ -25,16 +15,25 @@ export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
     this._dataSource.next(data);
   }
 
-  private buildFileTree(obj: any, level: number): TTreeNode[] {
+  private buildFileTree(obj: any, level: number, filterText?: string): TTreeNode[] {
     this._state.masterDataSource = obj;
     this._state.filterDataSource = obj;
 
     return Object.keys(obj).reduce<TTreeNode[]>((accumulator, key) => {
       const value = obj[key];
       if (value && value.payload) {
+        if (filterText && value.payload.value)  {
+          const textFound = value.payload.value.indexOf(filterText) > -1;
+          if (!textFound) { return accumulator; }
+        }
         if (value.payload.isHidden) {
           const isHidden = value.payload.isHidden.value;
           if (isHidden) { return accumulator; }
+        }
+      } else {
+        if (filterText) {
+          const textFound = key.toLowerCase().indexOf(filterText.toLowerCase()) > -1;
+          if (!textFound) { return accumulator; }
         }
       }
       const node = <TTreeNode>{};
@@ -42,7 +41,7 @@ export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
       if (value != null) {
         // TODO could plug in here to hide a payload of sorts on the item
         if (typeof value === 'object' && key !== 'payload') {
-          node.children = this.buildFileTree(value, level + 1);
+          node.children = this.buildFileTree(value, level + 1, filterText);
         } else {
           node.key = key;
           node.payload = value;
@@ -64,16 +63,10 @@ export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
   }
 
   public filterDataSource(filterText: string): void {
-    if (this._options.onFilterChange) {
-      const masterCopy: any = this._state.masterDataSource;
-      this._state.filteredDataSource = this._options.onFilterChange(
-        masterCopy,
-        filterText
-      );
-    } else {
-      this._state.filteredDataSource = []; /* Do some filtering on the masterDataSource */
-    }
-    this.notifyListenersOnDataUpdate();
+    const { dataSource } = this._options;
+    const newTree = this.buildFileTree(dataSource, 0, filterText);
+    this._dataSource.next(newTree);
+    this.expand();
   }
 
   public updateSelectedNodes(event: SelectionChange<TTreeNode>): void {

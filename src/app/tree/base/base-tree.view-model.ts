@@ -1,7 +1,4 @@
-import {
-  BehaviorSubject,
-  Observable
-} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export abstract class BaseTreeViewModel {
   public _state: any = {
@@ -35,8 +32,8 @@ export abstract class BaseTreeViewModel {
     this.notifyListenersOnDataUpdate();
   }
 
-  public notifyListenersOnDataUpdate(): void {
-    this._dataSource.next(this._state.masterDataSource);
+  public notifyListenersOnDataUpdate(dataSource?: any[]): void {
+    this._dataSource.next(dataSource ? dataSource : this._state.masterDataSource);
     this._notifyTreeChange.next(null);
   }
 

@@ -1,4 +1,4 @@
 export interface IBaseTreeOptions {
-  dataSource: any;
+  dataSource: Object;
   onFilterChange?: (dataSource: any, filterText: string) => Object;
 }

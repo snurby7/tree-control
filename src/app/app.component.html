@@ -14,6 +14,7 @@
     </ng-template>
   </app-edit-tree>
   <h2>View Tree Below</h2>
+  <input matInput placeholder="Search" (input)="filterChanged($event.target.value)">
   <app-view-tree *ngIf="viewTreeVM"
                  [vm]="viewTreeVM">
     <ng-template #itemTemplate

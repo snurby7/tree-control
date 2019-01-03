@@ -1,17 +1,7 @@
-import {
-  Component
-} from '@angular/core';
+import { Component } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
-import {
-  BehaviorSubject
-} from 'rxjs';
-
-import {
-  EditTreeFactory,
-  IEditTreeViewModel,
-  ViewTreeFactory,
-  ViewTreeViewModel
-} from './tree';
+import { EditTreeFactory, IEditTreeViewModel, ViewTreeFactory, ViewTreeViewModel } from './tree';
 
 
 const TREE_DATA = {
@@ -43,6 +33,7 @@ const TREE_DATA = {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
   public editTreeVM: IEditTreeViewModel;
   public viewTreeVM: ViewTreeViewModel;
 
@@ -54,11 +45,21 @@ export class AppComponent {
       dataSource: TREE_DATA
     });
     this.viewTreeVM = viewTreeFactory.create({
-      dataSource: TREE_DATA
+      dataSource: TREE_DATA,
+      onFilterChange: (dataSource, filterText) => this.filterData(dataSource, filterText)
     });
   }
 
   public onClick(node): void {
     console.log(node);
+  }
+
+  public filterChanged(filterText: string): void {
+    this.viewTreeVM.filterDataSource(filterText);
+  }
+
+  private filterData(dataSource: any, filterText: string): Object {
+    console.log(dataSource);
+    return dataSource;
   }
 }
