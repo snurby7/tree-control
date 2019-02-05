@@ -14,7 +14,7 @@ import {
 } from './view-tree.view-model';
 
 @Component({
-  selector: 'app-view-tree',
+  selector: 'buns-view-tree',
   templateUrl: 'view-tree.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -1,9 +1,15 @@
-import { SelectionChange } from '@angular/cdk/collections';
-
-import { BaseTreeViewModel } from '../base/base-tree.view-model';
-import { FlatNode } from '../contracts/flat-node.interface';
-import { Node } from '../contracts/node.interface';
-import { IViewTreeOptions } from './view-tree-options.interface';
+import {
+  BaseTreeViewModel
+} from '../base/base-tree.view-model';
+import {
+  FlatNode
+} from '../contracts/flat-node.interface';
+import {
+  Node
+} from '../contracts/node.interface';
+import {
+  IViewTreeOptions
+} from './view-tree-options.interface';
 
 export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends FlatNode = any> extends BaseTreeViewModel {
   private _options: IViewTreeOptions = null;
@@ -22,7 +28,7 @@ export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
     return Object.keys(obj).reduce<TTreeNode[]>((accumulator, key) => {
       const value = obj[key];
       if (value && value.payload) {
-        if (filterText && value.payload.value)  {
+        if (filterText && value.payload.value) {
           const textFound = value.payload.value.indexOf(filterText) > -1;
           if (!textFound) { return accumulator; }
         }
@@ -67,14 +73,6 @@ export class ViewTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
     const newTree = this.buildFileTree(dataSource, 0, filterText);
     this._dataSource.next(newTree);
     this.expand();
-  }
-
-  public updateSelectedNodes(event: SelectionChange<TTreeNode>): void {
-    this._state.selectedNodes.push(event.added);
-    this._state.selectedNodes = this._state.selectedNodes.filter(
-      (x: { key: string; }) => !event.removed.some(removed => removed.key === x.key)
-    );
-    console.log(this._state.selectedNodes);
   }
 
   public getVisibleNodeMap(): any {

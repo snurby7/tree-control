@@ -1,0 +1,46 @@
+<mat-tree #tree
+		  [dataSource]="dataSource"
+		  [treeControl]="treeControl">
+
+	<mat-tree-node *matTreeNodeDef="let node"
+				   matTreeNodeToggle
+				   matTreeNodePadding>
+		<button mat-icon-button
+				disabled></button>
+		<button mat-button
+				[matMenuTriggerFor]="menu">Menu</button>
+		<ng-container *ngTemplateOutlet="itemTemplate; context: {$implicit: node}"></ng-container>
+	</mat-tree-node>
+
+	<!-- This is the add node template -->
+	<mat-tree-node *matTreeNodeDef="let node; when: hasNoContent"
+				   matTreeNodePadding>
+		<button mat-icon-button
+				disabled></button>
+		<mat-form-field>
+			<input matInput
+				   #itemValue
+				   placeholder="New item...">
+		</mat-form-field>
+		<button mat-button
+				(click)="saveNode(node, itemValue.value)">Save</button>
+	</mat-tree-node>
+
+	<mat-tree-node *matTreeNodeDef="let node; when: hasChild"
+				   matTreeNodePadding>
+		<button mat-icon-button
+				matTreeNodeToggle>
+			<mat-icon class="mat-icon-rtl-mirror">
+				{{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+			</mat-icon>
+		</button>
+		<button mat-button
+				[matMenuTriggerFor]="menu">Menu</button>
+		<ng-container *ngTemplateOutlet="itemTemplate; context: {$implicit: node}"></ng-container>
+	</mat-tree-node>
+</mat-tree>
+<!-- TODO: This is demo until  https://confab.tylertech.com/browse/JUP-18169 -->
+<mat-menu #menu="matMenu">
+	<button mat-menu-item>Action Item 1</button>
+	<button mat-menu-item>Action Item 2</button>
+</mat-menu>

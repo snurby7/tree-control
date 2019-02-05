@@ -12,18 +12,18 @@ import {
   Node
 } from '../contracts/node.interface';
 import {
-  IEditTreeOptions
-} from './edit-tree-options.interface';
+  IMenuTreeOptions
+} from './menu-tree-options.interface';
 import {
-  IEditTreeViewModel
-} from './edit-tree.view-model.interface';
+  IMenuTreeViewModel
+} from './menu-tree.view-model.interface';
 
-export class EditTreeViewModel<TTreeNode extends Node = any, TFlatNode extends FlatNode = any>
-  extends BaseTreeViewModel implements IEditTreeViewModel {
-  public minimumNodes: number = null;
+export class MenuTreeViewModel<TTreeNode extends Node = any, TFlatNode extends FlatNode = any>
+  extends BaseTreeViewModel implements IMenuTreeViewModel {
+  public maximumNodes: number = null;
 
   constructor(
-    private _options: IEditTreeOptions
+    private _options: IMenuTreeOptions
   ) {
     super();
     this._state.masterDataSource = this._options.dataSource;
@@ -31,7 +31,7 @@ export class EditTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
 
     const data = this.buildFileTree(this._options.dataSource, 0);
     this._dataSource.next(data);
-    this.minimumNodes = this._options.maxNodeLevel || null;
+    this.maximumNodes = this._options.maxNodeLevel || null;
   }
 
   private buildFileTree(obj: any, level: number): TTreeNode[] {
@@ -89,7 +89,6 @@ export class EditTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
     this._state.selectedNodes = this._state.selectedNodes.filter(
       (x: { key: string; }) => !event.removed.some(removed => removed.key === x.key)
     );
-    console.log(this._state.selectedNodes);
   }
 
   public insertItem(node: TFlatNode, parent: TTreeNode, name: string) {
@@ -103,17 +102,6 @@ export class EditTreeViewModel<TTreeNode extends Node = any, TFlatNode extends F
 
   public updateItem(node: TTreeNode, name: string) {
     node.item = name;
-    // TODO Enforce uniqueness on the nodes
     this._dataSource.next(this.data);
-  }
-
-  public transformData(flatNode: TFlatNode, node: TTreeNode, level: number): void {
-    if (node.item.length) {
-      flatNode.item = node.item;
-    } else {
-      flatNode.payload = node.item;
-    }
-    flatNode.level = level;
-    flatNode.expandable = !!node.children;
   }
 }

@@ -1,27 +1,29 @@
 <div>
   <h2>Edit Tree Below</h2>
   <button mat-button
-          (click)="editTreeVM.expand()">Expand</button>
+          (click)="menuTreeVM.expand()">Expand</button>
   <button mat-button
-          (click)="editTreeVM.collapse()">Collapse</button>
-  <app-edit-tree *ngIf="editTreeVM"
-                 [vm]="editTreeVM">
+          (click)="menuTreeVM.collapse()">Collapse</button>
+  <buns-menu-tree *ngIf="menuTreeVM"
+                  [vm]="menuTreeVM">
     <ng-template #itemTemplate
                  let-node>
       <div (click)="onClick(node)">
         {{node?.item}}{{node?.payload?.value}}
       </div>
     </ng-template>
-  </app-edit-tree>
+  </buns-menu-tree>
   <h2>View Tree Below</h2>
-  <input matInput placeholder="Search" (input)="filterChanged($event.target.value)">
-  <app-view-tree *ngIf="viewTreeVM"
-                 [vm]="viewTreeVM">
+  <input matInput
+         placeholder="Search"
+         (input)="filterChanged($event.target.value)">
+  <buns-view-tree *ngIf="viewTreeVM"
+                  [vm]="viewTreeVM">
     <ng-template #itemTemplate
                  let-node>
       <div (click)="onClick(node)">
         {{node?.item}}{{node?.payload?.value}}
       </div>
     </ng-template>
-  </app-view-tree>
+  </buns-view-tree>
 </div>

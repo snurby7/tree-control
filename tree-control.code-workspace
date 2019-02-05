@@ -8,7 +8,6 @@
     "editor.detectIndentation": false,
     "editor.formatOnSave": true,
     "editor.insertSpaces": false,
-    "editor.tabSize": 4,
     "editor.wordWrap": "off",
     "files.exclude": {
       "node_modules": true,
@@ -16,23 +15,6 @@
     "files.trimTrailingWhitespace": true,
     "html.format.wrapAttributes": "force-aligned",
     "html.format.wrapLineLength": 0,
-    "todohighlight.keywords": [
-      { //this block will override the built-in keyword `TODO:` and give it new style
-        "text": "// TODO:",
-        "color": "#00dfff",
-        "backgroundColor": ""
-      },
-      { //this block will override the built-in keyword `TODO:` and give it new style
-        "text": "//TODO:",
-        "color": "#00dfff",
-        "backgroundColor": ""
-      },
-      { //this block will override the built-in keyword `TODO:` and give it new style
-        "text": "TODO:",
-        "color": "#00dfff",
-        "backgroundColor": ""
-      }
-    ],
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorLong}",
     "typescriptHero.imports.grouping": [
@@ -40,7 +22,6 @@
       "/@angular/",
       "/rxjs/",
       "Modules",
-      "/@nwps/",
       "Remaining",
       "Workspace"
     ],
@@ -49,6 +30,5 @@
     "typescriptHero.imports.multiLineWrapThreshold": 1,
     "typescriptHero.imports.multiLineTrailingComma": false,
     "typescriptHero.imports.stringQuoteStyle": "'",
-    "typescript.tsdk": "nws-records-components\\node_modules\\typescript\\lib",
   }
 }

@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ContentChild,
   Input,
@@ -18,17 +17,17 @@ import {
   Node
 } from '../contracts/node.interface';
 import {
-  EditTreeViewModel
-} from './edit-tree.view-model';
+  MenuTreeViewModel
+} from './menu-tree.view-model';
 
 @Component({
-  selector: 'app-edit-tree',
-  templateUrl: 'edit-tree.component.html',
+  selector: 'buns-menu-tree',
+  templateUrl: 'menu-tree.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditTreeComponent extends BaseTreeComponent implements OnInit, OnDestroy {
+export class MenuTreeComponent extends BaseTreeComponent implements OnInit, OnDestroy {
   @ContentChild('itemTemplate') itemTemplate: any;
-  @Input() vm: EditTreeViewModel;
+  @Input() vm: MenuTreeViewModel;
 
   private _itemInAddState = false;
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
@@ -39,18 +38,17 @@ export class EditTreeComponent extends BaseTreeComponent implements OnInit, OnDe
   /** The new item's name */
   public newItemName = '';
 
-  public maxLevel = 3;
+  public maxLevel = 3; // ! This is just arbitrary for now and overrode in OnInit
+
   public get itemInAddState(): boolean { return this._itemInAddState; }
 
-  constructor(
-    private changeDetectorRef: ChangeDetectorRef
-  ) {
+  constructor() {
     super();
   }
 
   public ngOnInit(): void {
     super.ngOnInit();
-    this.maxLevel = this.vm.minimumNodes;
+    this.maxLevel = this.vm.maximumNodes;
   }
 
   public ngOnDestroy(): void {
@@ -65,7 +63,6 @@ export class EditTreeComponent extends BaseTreeComponent implements OnInit, OnDe
     }
     this.vm.insertItem(node, parentNode, '');
     this._itemInAddState = true;
-    this.runFunctionOnNextData = () => this.treeControl.expand(node);
   }
 
   /** Save the node to view model */
@@ -76,6 +73,5 @@ export class EditTreeComponent extends BaseTreeComponent implements OnInit, OnDe
     }
     this.vm.updateItem(nestedNode, itemValue);
     this._itemInAddState = false;
-    this.runFunctionOnNextData = () => this.changeDetectorRef.detectChanges();
   }
 }

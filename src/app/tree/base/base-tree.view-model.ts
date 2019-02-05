@@ -1,4 +1,18 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  SelectionChange
+} from '@angular/cdk/collections';
+
+import {
+  BehaviorSubject,
+  Observable
+} from 'rxjs';
+
+import {
+  FlatNode
+} from '../contracts/flat-node.interface';
+import {
+  Node
+} from '../contracts/node.interface';
 
 export abstract class BaseTreeViewModel {
   public _state: any = {
@@ -7,13 +21,13 @@ export abstract class BaseTreeViewModel {
     selectedNodes: []
   };
 
-  _dataSource: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  protected _dataSource: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   public get dataSource(): Observable<any[]> { return this._dataSource.asObservable(); }
 
-  _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected _collapseExpandAll: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public get collapseExpandAll(): Observable<boolean> { return this._collapseExpandAll.asObservable(); }
 
-  _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
+  protected _notifyTreeChange: BehaviorSubject<void> = new BehaviorSubject<void>(null);
   public get notifyTreeChange(): Observable<void> { return this._notifyTreeChange.asObservable(); }
 
   get data(): any[] { return this._dataSource.value; }
@@ -39,5 +53,23 @@ export abstract class BaseTreeViewModel {
 
   public getVisibleNodeMap(): any {
     return this._state.filteredDataSource;
+  }
+
+  public transformData(flatNode: FlatNode, node: Node, level: number): void {
+    if (node.item.length) {
+      flatNode.item = node.item;
+    } else {
+      flatNode.payload = node.item;
+    }
+    flatNode.level = level;
+    flatNode.expandable = !!node.children;
+  }
+
+  public updateSelectedNodes(event: SelectionChange<Node>): void {
+    this._state.selectedNodes.push(event.added);
+    this._state.selectedNodes = this._state.selectedNodes.filter(
+      (x: { key: string; }) => !event.removed.some(removed => removed.key === x.key)
+    );
+    console.log(this._state.selectedNodes);
   }
 }

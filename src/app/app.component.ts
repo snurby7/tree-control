@@ -1,31 +1,17 @@
-import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {
+  Component
+} from '@angular/core';
 
-import { EditTreeFactory, IEditTreeViewModel, ViewTreeFactory, ViewTreeViewModel } from './tree';
+import {
+  IMenuTreeViewModel,
+  MenuTreeFactory,
+  ViewTreeFactory,
+  ViewTreeViewModel
+} from './tree';
+import {
+  TREE_DATA
+} from './tree.data';
 
-
-const TREE_DATA = {
-  Groceries: {
-    'Almond Meal flour': {
-      payload: {
-        isHidden: new BehaviorSubject<boolean>(true),
-        value: 'waffles are good'
-      }
-    },
-    'Organic eggs': null,
-    'Protein Powder': null,
-    Fruits: {
-      Apple: null,
-      Berries: ['Blueberry', 'Raspberry', 'Cheetohs'],
-      Orange: null
-    }
-  },
-  Reminders: [
-    'Cook dinner',
-    'Read the Material Design spec',
-    'Upgrade Application to Angular'
-  ]
-};
 
 @Component({
   selector: 'app-root',
@@ -34,14 +20,14 @@ const TREE_DATA = {
 })
 export class AppComponent {
 
-  public editTreeVM: IEditTreeViewModel;
+  public menuTreeVM: IMenuTreeViewModel;
   public viewTreeVM: ViewTreeViewModel;
 
   constructor(
-    editTreeFactory: EditTreeFactory,
+    menuTreeFactory: MenuTreeFactory,
     viewTreeFactory: ViewTreeFactory
   ) {
-    this.editTreeVM = editTreeFactory.create({
+    this.menuTreeVM = menuTreeFactory.create({
       dataSource: TREE_DATA
     });
     this.viewTreeVM = viewTreeFactory.create({
